@@ -2,12 +2,12 @@
 import getopt
 import logging
 import sys
-from .my_settings import LoadSettingsFile
-from .my_settings import ValidateSettings
-from .my_settings import SettingsError
-from .my_settings import InvalidConfigError
-from .my_settings import SetupLogging
-from .corpus import Corpus
+from gstomd.my_settings import LoadSettingsFile
+from gstomd.my_settings import ValidateSettings
+from gstomd.my_settings import SettingsError
+from gstomd.my_settings import InvalidConfigError
+from gstomd.my_settings import SetupLogging
+from gstomd.corpus import Corpus
 
 
 DEFAULT_SETTINGS = {
@@ -24,6 +24,7 @@ def main():
     SetupLogging()
 
     logger = logging.getLogger()
+    logger.debug("Start")
 
     try:
         opts, _ = getopt.getopt(sys.argv[1:], '-c', [
@@ -50,21 +51,15 @@ def main():
         # else:
             # ValidateSettings(settings)
 
-    dest_folder = settings.get('dest_folder')
-    pydrive_settings = settings.get('pydrive_settings')
-    collections = settings.get('collections')
+    corpus = Corpus(settings_file)
+    logger.debug("Corpus Created")
 
-    logger.debug("%s, %s, %s", dest_folder, pydrive_settings, collections)
+    corpus.fetch()
+    logger.debug("Corpus Fetched")
 
-    for collection in collections:
-        logger.debug("collection : %s", collection)
-        corpus = Corpus(pydrive_settings=pydrive_settings,
-                        drive_id=collection['drive_id'],
-                        root_folder_id=collection['root_folder_id'],
-                        dest_folder=dest_folder,
-                        root_folder_name=collection['root_folder_name'])
-        corpus.get_source()
-        corpus.root_folder.to_disk()
+    for col in corpus.collections:
+        logger.info(col.root_folder)
+        corpus.to_disk()
 
 
 if __name__ == "__main__":

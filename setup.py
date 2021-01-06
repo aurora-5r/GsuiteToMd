@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name='GsuiteToMd',
-    version='0.1',
+    version='0.9',
     author='Laurent Maumet',
     author_email='laurent@aurora-5r.fr',
     url='https://github.com/laurentmau/GsuiteToMd',
@@ -15,8 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License : : OSI Approved : : GNU General Public License v3 (GPLv3)",
-        "Operating System :: OS Independent",
+    ],
     python_requires='>=3.6',
 
 )
