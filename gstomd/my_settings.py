@@ -1,4 +1,8 @@
+from os.path import isfile, join
+import logging
+import logging.config
 from yaml import YAMLError, load
+logger = logging.getLogger(__name__)
 
 try:
     from yaml import CLoader as Loader
@@ -17,6 +21,27 @@ SETTINGS_STRUCT = {
         'type': str,
         'required': False,
         'default': 'pydrive_settings.yaml'
+    },
+
+    'collections': {
+        'type': dict,
+        'required': True,
+        'struct': {
+            'drive_id': {
+                'type': str,
+                'required': False,
+                'default': ""
+            },
+            'root_folder_id': {
+                'type': str,
+                'required': True
+            },
+            'root_folder_name': {
+                'type': str,
+                'required': False,
+                'default': ""
+            }, }
+
     },
 }
 
@@ -40,6 +65,8 @@ def LoadSettingsFile(filename=SETTINGS_FILE):
         stream = open(filename, 'r')
         data = load(stream, Loader=Loader)
     except (YAMLError, IOError) as e:
+        from os import listdir
+        logger.debug("in current directory : %s", listdir("."))
         raise SettingsError(e) from e
     return data
 
@@ -111,3 +138,19 @@ def _ValidateSettingsElement(data, struct, key):
             if value == dependency['value']:
                 for reqkey in dependency['attribute']:
                     _ValidateSettingsElement(data, struct, reqkey)
+
+
+def SetupLogging(filename='logging.yaml',
+                 default_level=logging.DEBUG,):
+    """initialize logging
+
+    Args:
+        filename name (str, optional). the configuration file name
+        default_level ( optional):  Defaults to logging.DEBUG.
+    """
+    try:
+        log_cfg = LoadSettingsFile(filename=filename)
+        logging.config.dictConfig(log_cfg)
+    except (YAMLError, IOError) as e:
+        logging.basicConfig(level=default_level)
+        logging.info("No logging config file, level set to debug %s", e)

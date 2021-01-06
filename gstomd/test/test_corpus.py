@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-from gstomd.corpus import Corpus
 import unittest
-import sys
-from gstomd.my_init import setup_logging
 import logging
-setup_logging()
+
+from gstomd.corpus import Corpus
+from gstomd.my_settings import SetupLogging
+
+SetupLogging()
 logger = logging.getLogger(__name__)
 
 
@@ -18,14 +19,18 @@ class CorpusTest(unittest.TestCase):
     def test_01(self):
         logger.debug("Begin")
 
-        corpus = Corpus()
-        corpus.get_source(drive_id="0AIZGD5MSHiIcUk9PVA",
-                                   root_folder_id="1ldIISbxYSv_s_GTPX7FhrVc_ytVpGHgT")
-        logger.info(corpus.gscontent)
-        corpus.gscontent.create_folders()
-        corpus.gscontent.create_files()
+        corpus = Corpus('settings/test1.yaml')
+        logger.debug("Corpus Created")
+
+        corpus.fetch()
+        logger.debug("Corpus Fetched")
+
+        for col in corpus.collections:
+
+            logger.info(col.root_folder)
+
+        corpus.to_disk()
         self.assertEqual(True, True)
-        logger.debug("end")
 
 
 if __name__ == '__main__':
