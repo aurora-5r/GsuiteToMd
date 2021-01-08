@@ -1,75 +1,71 @@
 cache:
-  directories:
-  - "$HOME/.cache/pip"
-  - "$HOME/.pyenv"
+    directories:
+        - "$HOME/.cache/pip"
+        - "$HOME/.pyenv"
 dist: xenial
 env:
-  global:
-  - HOMEBREW_NO_AUTO_UPDATE=1
-  - PYENV_ROOT="$HOME/.pyenv"
-  - PATH="$PYENV_ROOT/bin:$PATH"
-  - PIP_CACHE_DIR="$HOME/.cache/pip"
+    global:
+        - HOMEBREW_NO_AUTO_UPDATE=1
+        - PYENV_ROOT="$HOME/.pyenv"
+        - PATH="$PYENV_ROOT/bin:$PATH"
+        - PIP_CACHE_DIR="$HOME/.cache/pip"
 stages:
-- check
-- test
-- build
+    - check
+    - test
+    - build
 jobs:
-  include:
-  - name: Check patch formatting
-    stage: check
-    os: linux
-    language: python
-    python: 3.7
-    before_install: 
-    install: 
-    script: "./scripts/ci/check_patch.sh"
-  - name: 3.7 on Windows
-    stage: test
-    os: windows
-    language: shell
-  - name: 3.5 on Linux
-    language: python
-    python: 3.5
-  - name: 3.6 on Linux
-    language: python
-    python: 3.6
-  - name: 3.7 on Linux
-    language: python
-    python: 3.7
-  - name: 3.7 on Mac
-    os: osx
-    osx_image: xcode11.3
-  - name: Pypi pkgs
-    if: tag is present
-    stage: build
-    language: python
-    python: 3.7
-    script: "./scripts/build_package.sh"
-    deploy:
-    - provider: pypi
-      user:
-        secure: titi
-      password:
-        secure: toto
-      skip_existing: true
-      file_glob: true
-      file:
-      - dist/gstomd*.whl
-      - dist/gstomd*.tar.gz
-      skip_cleanup: true
-      on:
-        tags: true
-        repo: laurentmau/GsuiteToMd
+    include:
+        - name: Check patch formatting
+          stage: check
+          os: linux
+          language: python
+          python: 3.7
+          before_install:
+          install:
+          script: "./scripts/ci/check_patch.sh"
+        - name: 3.7 on Windows
+          stage: test
+          os: windows
+          language: shell
+        - name: 3.5 on Linux
+          language: python
+          python: 3.5
+        - name: 3.6 on Linux
+          language: python
+          python: 3.6
+        - name: 3.7 on Linux
+          language: python
+          python: 3.7
+        - name: 3.7 on Mac
+          os: osx
+          osx_image: xcode11.3
+        - name: Pypi pkgs
+          if: tag is present
+          stage: build
+          language: python
+          python: 3.7
+          script: "./scripts/build_package.sh"
+          deploy:
+              - provider: pypi
+                user:
+                    secure: flkoZ4oNVqksL2ULnjGySexshoJZzjJkJhYxdrf5GTSomb1V/oUqFdoJV3nF0KbxBxmHbmzt6JFGaKm/PZungE3KyjGYDmUA/Rn+zYioq8SkIQVVaaNS9YZ077i9Yapi9ZDH2+rg4VzikX9TXeIqcqMzOo2LgBV4u+H6xTWAXdH53FJvN6XT8ENoE+gwU+H9fuI+R6KgKWr9lWqfLt4ct3LvNsCAs5HN7yPGWL9MZwWw2qrzWpQ38Nrs4bGTNqRFAoGisXaPvsSTnqVjA6BT+sJdyUA5djUDJTx2GwplDH75YKFIIBvCzf9ma2Xq98Qp8EkSvnVnea9lV2Ih2jVZ87B0syLJgZhMEYnca/4P9KePR9KeJ2avPhlk91XgX8w2f+cIGKBZEeFdUXTyz19Yls2gkpsY7KGEk0syJdlBolBwo+VmI52KiUyKrhN6TBESXN38sw28g7pSN4ijtk3tbQ87yOJOjEP6TSyPXMHxlFsOEPsymZQYtavzCat6asuNTaMyYUf0CZq8NGnGw7lKLttmys0fnAkmGTY20FwGPphMQAXeIMYln0wxa2q6E0MsarkyODlUPwUg9fuV3D7F4rRTlxSgi6AakJ9qJnBe5Wm8hwaWtO9xbAhXfpSzDdZ71n2UMIPV8zEeXrY7XVL5ojU4sUckDu56nppFiyKI9Ho=
+                password:
+                    secure: dcQ+XUaD/NDluQ9ACcJwqgsR9AKFrKRiIrAO7ivtkzusOjrOPuZDit2MWUDa+kABDeEnEd2+x8eD7KQjTpFGDWNZ93Jv1Byxik8ZDqAnGqTsWNeUttHwZU9e2YgaUGf2u9V9nNMKfBbnXBC8anPlO+aXh/Vsqvy1K2ujB6Lu35AFRLeyw6wA/J9VihRtCX/PbBQZhzZmlKcsxKN7b71SyYO5YnX1BEZQ1vTOBh3X77SezzO0fNWcZGa5dv+hzZNlrWdXaf57Pa6Y4EyCmp27cn/dkqCGW28R3MaPHATrxrADtXDIgSApGz63hZw1MQKY9PihKHMvh+CBIbSYJ0w/qvVtSjFDMA/IM/M/AnoTOGnizevtrtxSTxRCbgGoixVjKsWgjPAzSPi5nv4uHiiiUz+hphi0+cbLaMfRGsaCIB2DrUPc8mqMQn0clv53fPM9H//O3ByPuPPigj1GLzJApjZ1VCYVC23ZNb8HwdYBuL+oiAcxVo0ZzTrjZcK7x3QKK2YPECW5uRkQIX4smqaJjwECZPF9WM9q5IhtP0fDsJ3RZx0BzIBRMfo4PXgSmLnGTnU0Mertoe51osyeMWBk6iu7qysz8/NCLUw2V30jqHFnmE9sgMZLaEoyWxgHxdQ5+Ad7PvQLDmQWMzCfYi70pgG3uMdMAxvnSI7ycoH5sC4=
+
+                skip_existing: true
+                file_glob: true
+                file:
+                    - dist/gstomd*.whl
+                    - dist/gstomd*.tar.gz
+                skip_cleanup: true
+                on:
+                    tags: true
+                    repo: laurentmau/GsuiteToMd
 before_install:
-- bash ./scripts/ci/before_install.sh
-- source env.sh
-- bash ./scripts/ci/check_python.sh
+    - bash ./scripts/ci/before_install.sh
+    - source env.sh
+    - bash ./scripts/ci/check_python.sh
 install:
-- bash ./scripts/ci/install.sh
+    - bash ./scripts/ci/install.sh
 script:
-- bash ./scripts/ci/script.sh
-deploy:
-  password:
-    secure: dcQ+XUaD/NDluQ9ACcJwqgsR9AKFrKRiIrAO7ivtkzusOjrOPuZDit2MWUDa+kABDeEnEd2+x8eD7KQjTpFGDWNZ93Jv1Byxik8ZDqAnGqTsWNeUttHwZU9e2YgaUGf2u9V9nNMKfBbnXBC8anPlO+aXh/Vsqvy1K2ujB6Lu35AFRLeyw6wA/J9VihRtCX/PbBQZhzZmlKcsxKN7b71SyYO5YnX1BEZQ1vTOBh3X77SezzO0fNWcZGa5dv+hzZNlrWdXaf57Pa6Y4EyCmp27cn/dkqCGW28R3MaPHATrxrADtXDIgSApGz63hZw1MQKY9PihKHMvh+CBIbSYJ0w/qvVtSjFDMA/IM/M/AnoTOGnizevtrtxSTxRCbgGoixVjKsWgjPAzSPi5nv4uHiiiUz+hphi0+cbLaMfRGsaCIB2DrUPc8mqMQn0clv53fPM9H//O3ByPuPPigj1GLzJApjZ1VCYVC23ZNb8HwdYBuL+oiAcxVo0ZzTrjZcK7x3QKK2YPECW5uRkQIX4smqaJjwECZPF9WM9q5IhtP0fDsJ3RZx0BzIBRMfo4PXgSmLnGTnU0Mertoe51osyeMWBk6iu7qysz8/NCLUw2V30jqHFnmE9sgMZLaEoyWxgHxdQ5+Ad7PvQLDmQWMzCfYi70pgG3uMdMAxvnSI7ycoH5sC4=
-  user:
-    secure: flkoZ4oNVqksL2ULnjGySexshoJZzjJkJhYxdrf5GTSomb1V/oUqFdoJV3nF0KbxBxmHbmzt6JFGaKm/PZungE3KyjGYDmUA/Rn+zYioq8SkIQVVaaNS9YZ077i9Yapi9ZDH2+rg4VzikX9TXeIqcqMzOo2LgBV4u+H6xTWAXdH53FJvN6XT8ENoE+gwU+H9fuI+R6KgKWr9lWqfLt4ct3LvNsCAs5HN7yPGWL9MZwWw2qrzWpQ38Nrs4bGTNqRFAoGisXaPvsSTnqVjA6BT+sJdyUA5djUDJTx2GwplDH75YKFIIBvCzf9ma2Xq98Qp8EkSvnVnea9lV2Ih2jVZ87B0syLJgZhMEYnca/4P9KePR9KeJ2avPhlk91XgX8w2f+cIGKBZEeFdUXTyz19Yls2gkpsY7KGEk0syJdlBolBwo+VmI52KiUyKrhN6TBESXN38sw28g7pSN4ijtk3tbQ87yOJOjEP6TSyPXMHxlFsOEPsymZQYtavzCat6asuNTaMyYUf0CZq8NGnGw7lKLttmys0fnAkmGTY20FwGPphMQAXeIMYln0wxa2q6E0MsarkyODlUPwUg9fuV3D7F4rRTlxSgi6AakJ9qJnBe5Wm8hwaWtO9xbAhXfpSzDdZ71n2UMIPV8zEeXrY7XVL5ojU4sUckDu56nppFiyKI9Ho=
+    - bash ./scripts/ci/script.sh
