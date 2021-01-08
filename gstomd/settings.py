@@ -1,7 +1,7 @@
-from os.path import isfile, join
 import logging
 import logging.config
 from yaml import YAMLError, load
+
 logger = logging.getLogger(__name__)
 
 try:
@@ -9,15 +9,15 @@ try:
 except ImportError:
     from yaml import Loader
 
-SETTINGS_FILE = 'settings.yaml'
+SETTINGS_FILE = "settings.yaml"
 
 DEFAULT_SETTINGS = {
-    'pydrive_settings': 'pydrive_settings.yaml',
-    'dest_folder': './gstomd',
-    'root_folder_id': '',
-    'root_folder_name': '',
-    'drive_id': '',
-    'collections': []
+    "pydrive_settings": "pydrive_settings.yaml",
+    "dest_folder": "./gstomd",
+    "root_folder_id": "",
+    "root_folder_name": "",
+    "drive_id": "",
+    "collections": [],
 }
 
 
@@ -37,17 +37,19 @@ def LoadSettingsFile(filename=SETTINGS_FILE):
     :raises: SettingsError
     """
     try:
-        stream = open(filename, 'r')
+        stream = open(filename, "r")
         data = load(stream, Loader=Loader)
     except (YAMLError, IOError) as e:
         from os import listdir
+
         logger.debug("in current directory : %s", listdir("."))
         raise SettingsError(e) from e
     return data
 
 
-def SetupLogging(filename='logging.yaml',
-                 default_level=logging.DEBUG,):
+def SetupLogging(
+    filename="logging.yaml", default_level=logging.DEBUG,
+):
     """initialize logging
 
     Args:

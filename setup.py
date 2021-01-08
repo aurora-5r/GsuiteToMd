@@ -20,15 +20,10 @@ setup(
     version="0.91",
     author="Laurent Maumet",
     author_email="laurent@aurora-5r.fr",
-
     packages=setuptools.find_packages(),
-    url='https://github.com/laurentmau/GsuiteToMd',
-
+    url="https://github.com/laurentmau/GsuiteToMd",
     description="Tools to convert gsuite Documents to markdown.",
     long_description=open("README.md").read(),
-    install_requires=[
-        "google-api-python-client >= 1.12.5",
-        "PyYAML >= 3.0",
-    ],
+    install_requires=["google-api-python-client >= 1.12.5", "PyYAML >= 3.0"],
     extras_require={"tests": tests_requirements},
 )

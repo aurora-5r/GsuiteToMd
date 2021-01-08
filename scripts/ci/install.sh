@@ -11,5 +11,5 @@ scriptdir="$(dirname $0)"
 $scriptdir/retry.sh pip install --upgrade pip setuptools wheel
 $scriptdir/retry.sh pip install .[tests]
 
-git config --global user.email "dvctester@example.com"
-git config --global user.name "DVC Tester"
+git config --global user.email "laurent@example.com"
+git config --global user.name "laurent"

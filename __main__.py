@@ -2,21 +2,8 @@
 import getopt
 import logging
 import sys
-from gstomd.settings import LoadSettingsFile
-from gstomd.settings import SettingsError
-from gstomd.settings import InvalidConfigError
 from gstomd.settings import SetupLogging
-from gstomd.corpus import Corpus
-
-
-DEFAULT_SETTINGS = {
-    'pydrive_settings': 'pydrive_settings.yaml',
-    'dest_folder': './data',
-    'root_folder_id': '',
-    'root_folder_name': '',
-    'drive_id': '',
-    'collections': []
-}
+from gstomd.corpus import GsuiteToMd
 
 
 def main():
@@ -26,37 +13,27 @@ def main():
     logger.debug("Start")
 
     try:
-        opts, _ = getopt.getopt(sys.argv[1:], '-c', [
-            'config=',
-        ])
+        opts, _ = getopt.getopt(sys.argv[1:], "-c", ["config="])
     except getopt.GetoptError:
         sys.exit(2)
-    settings_file = 'settings.yaml'
+    settings_file = "settings.yaml"
     for opt, arg in opts:
 
-        if opt in ('-c', '--config'):
+        if opt in ("-c", "--config"):
             settings_file = arg
+        if opt in ("-f", "--folder"):
+            folder_id = arg
 
     logging.debug("configfile : %s", settings_file)
 
-    try:
-        settings = LoadSettingsFile(settings_file)
-    except SettingsError as err:
-        logging.debug("incorrect config file : %s", err)
-        settings = DEFAULT_SETTINGS
-    else:
-        if settings is None:
-            settings = DEFAULT_SETTINGS
+    gstomd = GsuiteToMd(settings_file=settings_file)
+    logger.debug("gsuiteTomd  Created")
 
-    corpus = Corpus(settings_file)
-    logger.debug("Corpus Created")
-
-    corpus.fetch()
-    logger.debug("Corpus Fetched")
-
-    for col in corpus.collections:
-        logger.info(col.root_folder)
-        corpus.to_disk()
+    gstomd.Folder(
+        folder_id=folder_id,
+        dest_folder="doc_extracted",
+        root_folder_name="newposts",
+    )
 
 
 if __name__ == "__main__":
