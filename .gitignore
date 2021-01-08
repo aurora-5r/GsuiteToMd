@@ -1,7 +1,15 @@
 __pycache__/
 .ipynb_checkpoints/
 .vscode/
-log/
-data/
 **/*secret*
 
+*.pyc
+*~
+
+*.egg-info
+dist
+.cache
+
+.env
+.idea
+pip-wheel-metadata

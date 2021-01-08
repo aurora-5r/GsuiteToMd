@@ -2,7 +2,7 @@
 import unittest
 import logging
 
-from gstomd.corpus import Corpus
+from gstomd.corpus import GsuiteToMd
 from gstomd.my_settings import SetupLogging
 
 SetupLogging()
@@ -19,19 +19,16 @@ class CorpusTest(unittest.TestCase):
     def test_01(self):
         logger.debug("Begin")
 
-        corpus = Corpus('settings/test1.yaml')
-        logger.debug("Corpus Created")
+        gstomd = GsuiteToMd('settings/test1.yaml')
+        logger.debug("gsuiteTomd  Created")
 
-        corpus.fetch()
-        logger.debug("Corpus Fetched")
+        gstomd.Folder(folder_id="1Ue7U59r_oBXnuAtIOFkb8KGeTKAEZrkf",
+                      dest_folder="doc_extracted", root_folder_name="newposts")
+        logger.debug("folders  Fetched")
 
-        for col in corpus.collections:
-
-            logger.info(col.root_folder)
-
-        corpus.to_disk()
         self.assertEqual(True, True)
 
 
 if __name__ == '__main__':
+
     unittest.main()

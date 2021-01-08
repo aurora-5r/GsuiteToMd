@@ -6,34 +6,29 @@ import re
 import unicodedata
 import zipfile
 from datetime import datetime
-
+from funcy import retry
+from funcy.py3 import cat
+from pydrive2.files import ApiRequestError
 from bs4 import BeautifulSoup
 from markdownify import markdownify as md
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
+from pydrive2.auth import GoogleAuth
+from pydrive2.drive import GoogleDrive
+from pydrive2.files import GoogleDriveFile
+from pydrive2.apiattr import ApiAttribute
+
 from .my_settings import LoadSettingsFile
-from .my_settings import ValidateSettings
 from .my_settings import SettingsError
 from .my_settings import InvalidConfigError
-from .my_settings import SetupLogging
 logger = logging.getLogger(__name__)
 FILETYPE = {
     "DOC": ("application/vnd.google-apps.document", "Google Doc"),
     "FOLDER": ("application/vnd.google-apps.folder", "Folder")
 }
-
-
-def DebugInOut(fn):
-    """Decorator to add in and out logs
-    """
-    def wrapped(*v, **k):
-        name = fn.__name__
-        logger.debug("IN %s(%s)", name, ", ".join(
-            map(repr, chain(v, k.values()))))
-        result = fn(*v, **k)
-        logger.debug("OUT %s", name)
-        return result
-    return wrapped
+DEFAULT_SETTINGS = {
+    'pydrive_settings': 'pydrive_settings.yaml',
+    'dest_folder': 'gstomd',
+    'collections': []
+}
 
 
 def mime_to_filetype(mime_string):
@@ -69,41 +64,69 @@ def slugify(value, allow_unicode=False):
     return re.sub(r'[-\s]+', '', value).strip('-_')
 
 
-class Node:
+class Node():
     """
     class for Google Drive item
     """
 
-    def __init__(self, path, basename, id_, depth=1):
+    def __init__(self, googleDriveFile, path="", depth=1, drive_connector=""):
+
+        self._googleDriveFile = googleDriveFile
+        self.drive_connector = drive_connector
         self.path = path
-        self.basename = basename
         self.depth = depth
-        self.id_ = id_
+        self.is_fetched = False
 
     def unix_name(self):
-        return slugify(self.basename)
+        return slugify(self.basename())
+
+    def parent(self):
+        if self.parents:
+            return self.parents[0]['id']
+        return self.parents
+
+    @property
+    def parents(self):  # pass accesses to googleDriveFile
+        if self._googleDriveFile:
+            if self._googleDriveFile["parents"]:
+                return self._googleDriveFile["parents"]
+
+        return ""
+
+    def id(self):  # pass accesses to googleDriveFile
+        if self._googleDriveFile:
+            return self._googleDriveFile["id"]
+        return ""
+
+    def basename(self):  # pass accesses to googleDriveFile
+        if self._googleDriveFile:
+            return self._googleDriveFile["title"]
+        return ""
 
 
 class Gdoc(Node):
-    def __init__(self,  path, basename, id_, content, depth=1):
-
-        super().__init__(path, basename, id_, depth)
-        self.content = content
-        self.content_zip = ""
 
     def __str__(self):
         return "\n%sD : %50s|%20s|%20s|%s" % ("-" * self.depth*4,
-                                              self.id_,
-                                              self.basename,
+                                              self.id(),
+                                              self.basename(),
                                               self.unix_name(),
                                               self.path)
 
-    def to_md(self):
+    def fetch(self):
+        logger.debug("fetch content for %s", self)
+        self._googleDriveFile.FetchContent(
+            mimetype='application/zip', remove_bom=True)
+        self.is_fetched = True
+
+    def to_disk(self):
+        if not self.is_fetched:
+            self.fetch()
         os.makedirs(self.path)
         zip_path = self.path+"/"+os.path.basename(self.path)+".zip"
         md_path = self.path+"/"+os.path.basename(self.path)+".md"
         f_zip = open(zip_path, "wb")
-        f_zip.write(self.content_zip)
+        f_zip.write(self._googleDriveFile.content.getvalue())
         f_zip.close()
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
 
@@ -124,18 +147,77 @@ class Gdoc(Node):
 
 
 class Gfolder(Node):
-    def __init__(self,  path, basename, id_, depth=1):
-
-        super().__init__(path, basename, id_, depth)
+    def __init__(self, googleDriveFile="", path="", depth=1,  drive_connector="", dest_folder="", root_folder_id="", root_folder_name=""):
+        super().__init__(googleDriveFile=googleDriveFile, path=path,
+                         depth=depth, drive_connector=drive_connector)
         self.children = []
-        self.files = []
+        self.dest_folder = dest_folder
+        self.root_folder_name = root_folder_name
+        self.root_folder_id = root_folder_id
+        logger.debug(self)
 
     def __str__(self):
         message = "\n%sF : %50s|%20s|%20s|%s" % (
-            "-" * self.depth*4, self.id_, self.basename, self.unix_name(), self.path)
+            "-" * self.depth*4, self.id(), self.basename(), self.unix_name(), self.path)
         for child in self.children:
             message = "%s%s" % (message, child)
         return message
+
+    def fetch(self):
+        """
+        Generate folder structure with files
+        """
+
+        now = datetime.now()
+        date_time = now.strftime("%Y.%m.%d.%H.%M.%S")
+        self.path = "%s/%s/%s" % (self.dest_folder,
+                                  self.root_folder_name, date_time)
+        logger.debug(".")
+        nodes = {}
+        query = "trashed=false and mimeType='application/vnd.google-apps.folder'"
+
+        for item in pydrive_list_item(self.drive_connector, query):
+            if item["id"] == self.root_folder_id:
+                self._googleDriveFile = item
+                folder = self
+            else:
+                folder = Gfolder(item)
+            nodes[folder.id()] = (folder, folder.parent())
+
+        for folder_id, (folder, parent_id) in nodes.items():
+
+            if parent_id is None:
+                continue
+            if parent_id in nodes.keys():
+                nodes[parent_id][0].children.append(folder)
+            else:
+                logger.warning("parent id %s not found ",
+                               parent_id)
+
+        self.complement_children_path_depth()
+        folders = self.all_subfolders()
+        parents_id = ' or '.join(
+            "'{!s}' in parents".format(key) for key in folders)
+        # parents_id = "%s or '%s' in parents" % (parents_id, folders)
+
+        query_for_files = "trashed=false and mimeType='application/vnd.google-apps.document' and (" +\
+            parents_id+")"
+        logger.debug("Query for files : %s", query_for_files)
+        for item in pydrive_list_item(self.drive_connector, query_for_files):
+            doc = Gdoc(item)
+            logger.debug("Doc found %s", doc)
+
+            if doc.parent() in nodes.keys():
+                nodes[doc.parent()][0].children.append(doc)
+                logger.debug("doc added as children of %s",
+                             nodes[doc.parent()][0])
+            else:
+                logger.warning("parent id %s not found", doc.parent())
+        self.complement_children_path_depth()
+
+        logger.debug(self)
+        self.fetched = True
+        return self
 
     def to_disk(self):
         os.makedirs(self.path)
@@ -145,7 +227,7 @@ class Gfolder(Node):
                     child.to_disk()
 
                 elif isinstance(child, Gdoc):
-                    child.to_md()
+                    child.to_disk()
 
     def all_subfolders(self):
         """
@@ -155,7 +237,7 @@ class Gfolder(Node):
 
         for child in self.children:
             if isinstance(child, Gfolder):
-                list_folders.add(child.id_)
+                list_folders.add(child.id())
                 child_folders = child.all_subfolders()
                 if child_folders:
                     list_folders = list_folders.union(child_folders)
@@ -172,212 +254,73 @@ class Gfolder(Node):
                 child.complement_children_path_depth()
 
 
-@DebugInOut
-class Corpus():
-    DEFAULT_SETTINGS = {
-        'pydrive_settings': 'pydrive_settings.yaml',
-        'dest_folder': './data',
-        'root_folder_id': '',
-        'root_folder_name': '',
-        'drive_id': '',
-        'collections': []
-    }
+class GsuiteToMd():
 
-    def __init__(self, settings_file='settings.yaml'):
-        """Create an instance of Corpus.
-        :param settings_file: path of settings file. 'settings.yaml' by default.
-        :type settings_file: str.
+    def __init__(self, settings_file='settings.yaml', dest_folder=DEFAULT_SETTINGS['dest_folder']):
+        """Create an instance of GsuiteToMd.
+        : param settings_file: path of settings file. 'settings.yaml' by default.
+        : type settings_file: str.
 
         """
         try:
             settings = LoadSettingsFile(settings_file)
+            logging.debug("Settings read from config file, %s", settings_file)
         except SettingsError as err:
             logging.info("incorrect config file : %s", err)
-            settings = self.DEFAULT_SETTINGS
+            settings = DEFAULT_SETTINGS
         else:
             if settings is None:
-                settings = self.DEFAULT_SETTINGS
-            # else:
-                # ValidateSettings(settings)
-
-        self.dest_folder = settings.get('dest_folder')
+                settings = DEFAULT_SETTINGS
+                logging.debug(
+                    "Settings read from config file, %s but is none", settings_file)
+        if dest_folder:
+            self.dest_folder = dest_folder
+        else:
+            self.dest_folder = settings.get('dest_folder')
         self.pydrive_settings = settings.get('pydrive_settings')
+        logger.info("Settings : dest_folder %s, pydrive_settings %s",
+                    self.dest_folder, self.pydrive_settings)
         self.ga = GoogleAuth(
             self.pydrive_settings)
         self.drive_connector = GoogleDrive(self.ga)
-        collections_from_settings = settings.get('collections')
-        logger.debug(collections_from_settings)
-        self.collections = []
-        for item in collections_from_settings.items():
-            logger.debug(item)
-        for col_id, col_params in collections_from_settings.items():
-            logger.debug(col_id)
-            self.collections.append(Collection(
-                id_=col_id,
-                drive_id=col_params['drive_id'],
-                root_folder_id=col_params['root_folder_id'],
-                dest_folder=self.dest_folder,
-                root_folder_name=col_params['root_folder_name'],
-                drive_connector=self.drive_connector,)
-            )
 
-        logger.debug("%s, %s, %s", self.dest_folder,
-                     self.pydrive_settings, self.collections)
+    def Folder(self, folder_id, dest_folder, root_folder_name=""):
+        f = Gfolder(googleDriveFile="", path="", depth=1,  drive_connector=self.drive_connector,  root_folder_id=folder_id,
+                    dest_folder=dest_folder, root_folder_name=root_folder_name)
 
-    @DebugInOut
-    def fetch(self, collection_id=""):
+        f.fetch()
+        f.to_disk()
 
-        for col in self.collections:
-            if not collection_id or col.id_ == collection_id:
-                logger.debug("collection : %s", col.id_)
-                col.fetch()
-
-    @DebugInOut
-    def to_disk(self, collection_id=""):
-        for col in self.collections:
-            if not collection_id or col.id_ == collection_id:
-                logger.debug("collection : %s", col)
-                col.to_disk()
+    def Gdoc(self, doc_id, dest_folder):
+        doc = Gdoc(self.drive_connector, doc_id,
+                   dest_folder)
+        doc.fetch()
+        doc.to_disk()
 
 
-class Collection():
-    @DebugInOut
-    def __init__(self, drive_connector, id_, drive_id='', root_folder_id='root', dest_folder='./data', root_folder_name='root'):
-        """Create an instance of Collection.
-        :param drive : GoogleDrive
-        :type settings_file: str.
-        """
-        self.id_ = id_
-        self.fetched = False
-        self.drive_id = drive_id
-        self.root_folder_id = root_folder_id
-        self.dest_folder = dest_folder
-        self.root_folder_name = root_folder_name
-        self.root_folder = {}
-        self.drive_connector = drive_connector
+class PyDriveRetriableError(Exception):
+    pass
 
-    @DebugInOut
-    def fetch(self):
-        """
-        Generate folder structure with files
 
-        Returns:
-            Gfolder: root folder of the coprus
-        """
+# 15 tries, start at 0.5s, multiply by golden ratio, cap at 20s
+@retry(15, PyDriveRetriableError, timeout=lambda a: min(0.5 * 1.618 ** a, 20))
+def pydrive_retry(call, *args, **kwargs):
+    try:
+        result = call(*args, **kwargs)
+    except ApiRequestError as exception:
+        if exception.error["code"] in [403, 500, 502, 503, 504]:
+            raise PyDriveRetriableError("Google API request failed")
+        raise
+    return result
 
-        drive_id = self.drive_id
-        root_folder_id = self.root_folder_id
-        dest_folder = self.dest_folder
-        root_folder_name = self.root_folder_name
-        root_drive = Gfolder(
-            path="./",
-            basename="root",
-            depth=1,
-            id_=drive_id,
-        )
-        root_folder = root_drive
 
-        nodes = {root_drive.id_: (root_drive, None)}
-        query = "trashed=false and mimeType='application/vnd.google-apps.folder'"
-        if drive_id != "":
-            param = {
-                'corpora': "drive",
-                'supportsAllDrives': True,
-                'includeItemsFromAllDrives': True,
-                'driveId': drive_id,
-                'q': query,
+def pydrive_list_item(drive, query, max_results=1000):
+    param = {"q": query, "maxResults": max_results}
 
-            }
-        else:
-            param = {
-                'corpora': "user",
-                'q': query,
-            }
-        folders_list = self.drive_connector.ListFile(
-            param).GetList()
-        for item in folders_list:
-            file_name = item["title"]
-            file_id = item["id"]
-            item_parents = item.get("parents")
-            if not item_parents:
-                parent_id = root_drive.id_
-            else:
-                parent_id = item_parents[0]['id']
+    file_list = drive.ListFile(param)
 
-            node = Gfolder(
-                path=None,
-                basename=file_name,
-                depth=1,
-                id_=file_id)
+    # Isolate and decorate fetching of remote drive items in pages
+    def get_list(): return pydrive_retry(next, file_list, None)  # noqa: E731
 
-            nodes[file_id] = (node, parent_id)
-
-        for file_id, (node, parent_id) in nodes.items():
-            if file_id == root_folder_id:
-                root_folder = node
-                logger.debug("root_folder found :%s", root_folder)
-            if parent_id is None:
-                continue
-            if parent_id in nodes.keys():
-                nodes[parent_id][0].children.append(node)
-            else:
-                logger.warning("parent id %s not found", parent_id)
-        root_folder.depth = 1
-        now = datetime.now()
-        date_time = now.strftime("%Y.%m.%d.%H.%M.%S")
-        root_folder.path = "%s/%s/%s" % (dest_folder,
-                                         root_folder_name, date_time)
-
-        root_folder.complement_children_path_depth()
-        folders = root_folder.all_subfolders()
-        parents_id = ' or '.join(
-            "'{!s}' in parents".format(key) for key in folders)
-        parents_id = "%s or '%s' in parents" % (parents_id, root_folder_id)
-
-        query_for_files = "trashed=false and mimeType='application/vnd.google-apps.document' and (" + \
-            parents_id+")"
-        param['q'] = query_for_files
-        files_list = self.drive_connector.ListFile(
-            param).GetList()
-
-        for item in files_list:
-            file_name = item["title"]
-            file_id = item["id"]
-            content = item.get("content")
-            item_parents = item.get("parents")
-            is_root = item.get("isRoot")
-            if not item_parents:
-                parent_id = "None"
-            else:
-                if is_root:
-                    parent_id = "root"
-                else:
-                    parent_id = item_parents[0]['id']
-
-                node = Gdoc(
-                    path=None,
-                    basename=file_name,
-                    depth=1,
-                    id_=file_id,
-                    content=content
-                )
-                logger.debug("fetch content for %s", node)
-                item.FetchContent(
-                    mimetype='application/zip', remove_bom=True)
-                node.content_zip = item.content.getvalue()
-                if parent_id in nodes.keys():
-
-                    nodes[parent_id][0].children.append(node)
-                else:
-                    logger.warning("parent id %s not found", parent_id)
-        root_folder.complement_children_path_depth()
-
-        self.root_folder = root_folder
-        logger.debug(root_folder)
-        self.fetched = True
-        return root_folder
-
-    def to_disk(self):
-        if not self.fetched:
-            self.fetch()
-        self.root_folder.to_disk()
+    # Fetch pages until None is received, lazily flatten the thing
+    return cat(iter(get_list, None))

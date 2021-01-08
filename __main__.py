@@ -48,8 +48,6 @@ def main():
     else:
         if settings is None:
             settings = DEFAULT_SETTINGS
-        # else:
-            # ValidateSettings(settings)
 
     corpus = Corpus(settings_file)
     logger.debug("Corpus Created")
