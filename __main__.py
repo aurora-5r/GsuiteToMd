@@ -2,11 +2,10 @@
 import getopt
 import logging
 import sys
-from gstomd.my_settings import LoadSettingsFile
-from gstomd.my_settings import ValidateSettings
-from gstomd.my_settings import SettingsError
-from gstomd.my_settings import InvalidConfigError
-from gstomd.my_settings import SetupLogging
+from gstomd.settings import LoadSettingsFile
+from gstomd.settings import SettingsError
+from gstomd.settings import InvalidConfigError
+from gstomd.settings import SetupLogging
 from gstomd.corpus import Corpus
 
 

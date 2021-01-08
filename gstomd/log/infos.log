@@ -414,3 +414,17 @@ ImportError: file_cache is unavailable when using oauth2client >= 4.0.0 or googl
 2021-01-08 09:38:39,998 -  WARNING - corpus.py:195 -                fetch() ] parent id 0AIZGD5MSHiIcUk9PVA not found 
 2021-01-08 09:38:39,999 -  WARNING - corpus.py:195 -                fetch() ] parent id 0AIZGD5MSHiIcUk9PVA not found 
 2021-01-08 09:38:39,999 -  WARNING - corpus.py:195 -                fetch() ] parent id 0AIZGD5MSHiIcUk9PVA not found 
+2021-01-08 11:15:09,045 -  INFO - corpus.py:282 -             __init__() ] Settings : dest_folder gstomd, pydrive_settings pydrive_settings.yaml
+2021-01-08 11:15:09,052 -  INFO - client.py:650 - access_token_expired() ] access_token is expired. Now: 2021-01-08 11:15:09.052091, token_expiry: 2021-01-08 10:20:00
+2021-01-08 11:15:09,053 -  INFO - client.py:777 -  _do_refresh_request() ] Refreshing access_token
+2021-01-08 11:15:11,806 -  WARNING - corpus.py:195 -                fetch() ] parent id 0AC7RV9AOuAq_Uk9PVA not found 
+2021-01-08 11:15:11,807 -  WARNING - corpus.py:195 -                fetch() ] parent id 0AJas8EfRtCKRUk9PVA not found 
+2021-01-08 11:15:11,807 -  WARNING - corpus.py:195 -                fetch() ] parent id 0AJas8EfRtCKRUk9PVA not found 
+2021-01-08 11:15:11,807 -  WARNING - corpus.py:195 -                fetch() ] parent id  not found 
+2021-01-08 11:15:11,807 -  WARNING - corpus.py:195 -                fetch() ] parent id 0AJas8EfRtCKRUk9PVA not found 
+2021-01-08 11:15:11,808 -  WARNING - corpus.py:195 -                fetch() ] parent id  not found 
+2021-01-08 11:15:11,808 -  WARNING - corpus.py:195 -                fetch() ] parent id 0AJas8EfRtCKRUk9PVA not found 
+2021-01-08 11:15:11,808 -  WARNING - corpus.py:195 -                fetch() ] parent id 0AIZGD5MSHiIcUk9PVA not found 
+2021-01-08 11:15:11,808 -  WARNING - corpus.py:195 -                fetch() ] parent id 0AIZGD5MSHiIcUk9PVA not found 
+2021-01-08 11:15:11,809 -  WARNING - corpus.py:195 -                fetch() ] parent id 0AIZGD5MSHiIcUk9PVA not found 
+2021-01-08 11:15:11,809 -  WARNING - corpus.py:195 -                fetch() ] parent id 0AIZGD5MSHiIcUk9PVA not found 

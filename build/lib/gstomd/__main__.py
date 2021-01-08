@@ -2,11 +2,11 @@
 import getopt
 import logging
 import sys
-from .my_settings import LoadSettingsFile
-from .my_settings import ValidateSettings
-from .my_settings import SettingsError
-from .my_settings import InvalidConfigError
-from .my_settings import SetupLogging
+from .settings import LoadSettingsFile
+from .settings import ValidateSettings
+from .settings import SettingsError
+from .settings import InvalidConfigError
+from .settings import SetupLogging
 from .corpus import Corpus
 
 

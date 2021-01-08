@@ -16,9 +16,9 @@ from pydrive2.drive import GoogleDrive
 from pydrive2.files import GoogleDriveFile
 from pydrive2.apiattr import ApiAttribute
 
-from .my_settings import LoadSettingsFile
-from .my_settings import SettingsError
-from .my_settings import InvalidConfigError
+from .settings import LoadSettingsFile
+from .settings import SettingsError
+from .settings import InvalidConfigError
 logger = logging.getLogger(__name__)
 FILETYPE = {
     "DOC": ("application/vnd.google-apps.document", "Google Doc"),
@@ -107,7 +107,7 @@ class Node():
 class Gdoc(Node):
 
     def __str__(self):
-        return "\n%sD : %50s|%20s|%20s|%s" % ("-" * self.depth*4,
+        return "\n%sD : %50s|%20s|%20s|%s" % ("-" * self.depth * 4,
                                               self.id(),
                                               self.basename(),
                                               self.unix_name(),
@@ -123,8 +123,8 @@ class Gdoc(Node):
         if not self.is_fetched:
             self.fetch()
         os.makedirs(self.path)
-        zip_path = self.path+"/"+os.path.basename(self.path)+".zip"
-        md_path = self.path+"/"+os.path.basename(self.path)+".md"
+        zip_path = self.path + "/" + os.path.basename(self.path) + ".zip"
+        md_path = self.path + "/" + os.path.basename(self.path) + ".md"
         f_zip = open(zip_path, "wb")
         f_zip.write(self._googleDriveFile.content.getvalue())
         f_zip.close()
@@ -147,7 +147,7 @@ class Gdoc(Node):
 
 
 class Gfolder(Node):
-    def __init__(self, googleDriveFile="", path="", depth=1,  drive_connector="", dest_folder="", root_folder_id="", root_folder_name=""):
+    def __init__(self, googleDriveFile="", path="", depth=1, drive_connector="", dest_folder="", root_folder_id="", root_folder_name=""):
         super().__init__(googleDriveFile=googleDriveFile, path=path,
                          depth=depth, drive_connector=drive_connector)
         self.children = []
@@ -158,7 +158,7 @@ class Gfolder(Node):
 
     def __str__(self):
         message = "\n%sF : %50s|%20s|%20s|%s" % (
-            "-" * self.depth*4, self.id(), self.basename(), self.unix_name(), self.path)
+            "-" * self.depth * 4, self.id(), self.basename(), self.unix_name(), self.path)
         for child in self.children:
             message = "%s%s" % (message, child)
         return message
@@ -201,7 +201,7 @@ class Gfolder(Node):
         # parents_id = "%s or '%s' in parents" % (parents_id, folders)
 
         query_for_files = "trashed=false and mimeType='application/vnd.google-apps.document' and (" +\
-            parents_id+")"
+            parents_id + ")"
         logger.debug("Query for files : %s", query_for_files)
         for item in pydrive_list_item(self.drive_connector, query_for_files):
             doc = Gdoc(item)
@@ -285,7 +285,7 @@ class GsuiteToMd():
         self.drive_connector = GoogleDrive(self.ga)
 
     def Folder(self, folder_id, dest_folder, root_folder_name=""):
-        f = Gfolder(googleDriveFile="", path="", depth=1,  drive_connector=self.drive_connector,  root_folder_id=folder_id,
+        f = Gfolder(googleDriveFile="", path="", depth=1, drive_connector=self.drive_connector, root_folder_id=folder_id,
                     dest_folder=dest_folder, root_folder_name=root_folder_name)
 
         f.fetch()

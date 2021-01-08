@@ -11,11 +11,11 @@ from bs4 import BeautifulSoup
 from markdownify import markdownify as md
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
-from .my_settings import LoadSettingsFile
-from .my_settings import ValidateSettings
-from .my_settings import SettingsError
-from .my_settings import InvalidConfigError
-from .my_settings import SetupLogging
+from .settings import LoadSettingsFile
+from .settings import ValidateSettings
+from .settings import SettingsError
+from .settings import InvalidConfigError
+from .settings import SetupLogging
 logger = logging.getLogger(__name__)
 FILETYPE = {
     "DOC": ("application/vnd.google-apps.document", "Google Doc"),
@@ -85,14 +85,14 @@ class Node:
 
 
 class Gdoc(Node):
-    def __init__(self,  path, basename, id_, content, depth=1):
+    def __init__(self, path, basename, id_, content, depth=1):
 
         super().__init__(path, basename, id_, depth)
         self.content = content
         self.content_zip = ""
 
     def __str__(self):
-        return "\n%sD : %50s|%20s|%20s|%s" % ("-" * self.depth*4,
+        return "\n%sD : %50s|%20s|%20s|%s" % ("-" * self.depth * 4,
                                               self.id_,
                                               self.basename,
                                               self.unix_name(),
@@ -100,8 +100,8 @@ class Gdoc(Node):
 
     def to_md(self):
         os.makedirs(self.path)
-        zip_path = self.path+"/"+os.path.basename(self.path)+".zip"
-        md_path = self.path+"/"+os.path.basename(self.path)+".md"
+        zip_path = self.path + "/" + os.path.basename(self.path) + ".zip"
+        md_path = self.path + "/" + os.path.basename(self.path) + ".md"
         f_zip = open(zip_path, "wb")
         f_zip.write(self.content_zip)
         f_zip.close()
@@ -124,7 +124,7 @@ class Gdoc(Node):
 
 
 class Gfolder(Node):
-    def __init__(self,  path, basename, id_, depth=1):
+    def __init__(self, path, basename, id_, depth=1):
 
         super().__init__(path, basename, id_, depth)
         self.children = []
@@ -132,7 +132,7 @@ class Gfolder(Node):
 
     def __str__(self):
         message = "\n%sF : %50s|%20s|%20s|%s" % (
-            "-" * self.depth*4, self.id_, self.basename, self.unix_name(), self.path)
+            "-" * self.depth * 4, self.id_, self.basename, self.unix_name(), self.path)
         for child in self.children:
             message = "%s%s" % (message, child)
         return message
@@ -335,7 +335,7 @@ class Collection():
         parents_id = "%s or '%s' in parents" % (parents_id, root_folder_id)
 
         query_for_files = "trashed=false and mimeType='application/vnd.google-apps.document' and (" + \
-            parents_id+")"
+            parents_id + ")"
         param['q'] = query_for_files
         files_list = self.drive_connector.ListFile(
             param).GetList()
