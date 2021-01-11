@@ -14,16 +14,18 @@ from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 from pydrive2.files import ApiRequestError
 
-from .settings import LoadSettingsFile, SettingsError
-
 logger = logging.getLogger(__name__)
 FILETYPE = {
     "DOC": ("application/vnd.google-apps.document", "Google Doc"),
     "FOLDER": ("application/vnd.google-apps.folder", "Folder"),
 }
+
+
+this_dir, this_filename = os.path.split(__file__)
+pydrive_settings_default = os.path.join(this_dir, "pydrive_settings.yaml")
 DEFAULT_SETTINGS = {
-    "pydrive_settings": "pydrive_settings.yaml",
-    "dest_folder": "gstomd",
+    "pydrive_settings": pydrive_settings_default,
+    "dest_folder": "gstomd_extract",
 }
 
 
@@ -217,7 +219,7 @@ class Gfolder(Node):
             if parent_id in nodes.keys():
                 nodes[parent_id][0].children.append(folder)
             else:
-                logger.warning("parent id %s not found ", parent_id)
+                logger.debug("parent id %s not found ", parent_id)
 
         self.complement_children_path_depth()
         folders = self.all_subfolders()
@@ -242,7 +244,7 @@ class Gfolder(Node):
                     "doc added as children of %s", nodes[doc.parent()][0]
                 )
             else:
-                logger.warning("parent id %s not found", doc.parent())
+                logger.debug("parent id %s not found", doc.parent())
         self.complement_children_path_depth()
 
         logger.debug(self)
@@ -286,29 +288,17 @@ class Gfolder(Node):
 
 class GsuiteToMd:
     def __init__(
-        self, settings_file="settings.yaml",
+        self,
+        pydrive_settings=DEFAULT_SETTINGS["pydrive_settings"],
+        dest_folder=DEFAULT_SETTINGS["dest_folder"],
     ):
         """Create an instance of GsuiteToMd.
-        : param settings_file: path of settings file. 'settings.yaml' by default.
-        : type settings_file: str.
 
         """
-        try:
-            settings = LoadSettingsFile(settings_file)
-            logging.debug("Settings read from config file, %s", settings_file)
-        except SettingsError as err:
-            logging.info("incorrect config file : %s", err)
-            settings = DEFAULT_SETTINGS
-        else:
-            if settings is None:
-                settings = DEFAULT_SETTINGS
-                logging.debug(
-                    "Settings read from config file, %s but is none",
-                    settings_file,
-                )
 
-        self.dest_folder = settings.get("dest_folder")
-        self.pydrive_settings = settings.get("pydrive_settings")
+        self.dest_folder = dest_folder
+        self.pydrive_settings = pydrive_settings
+
         logger.info(
             "Settings : dest_folder %s, pydrive_settings %s",
             self.dest_folder,
@@ -317,14 +307,14 @@ class GsuiteToMd:
         self.ga = GoogleAuth(self.pydrive_settings)
         self.drive_connector = GoogleDrive(self.ga)
 
-    def Folder(self, folder_id, dest_folder, root_folder_name=""):
+    def Folder(self, folder_id, root_folder_name=""):
         f = Gfolder(
             googleDriveFile="",
             path="",
             depth=1,
             drive_connector=self.drive_connector,
             root_folder_id=folder_id,
-            dest_folder=dest_folder,
+            dest_folder=self.dest_folder,
             root_folder_name=root_folder_name,
         )
 

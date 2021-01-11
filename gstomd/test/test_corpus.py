@@ -25,7 +25,7 @@ class CorpusTest(unittest.TestCase):
 
         #     gstomd.Folder(
         #         folder_id="1Ue7U59r_oBXnuAtIOFkb8KGeTKAEZrkf",
-        #         dest_folder="doc_extracted",
+        #
         #         root_folder_name="newposts",
         #     )
         # logger.debug("folders  Fetched")
