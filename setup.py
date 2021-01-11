@@ -17,7 +17,7 @@ if sys.version_info >= (3, 6):
 
 setup(
     name="GsuiteToMd",
-    version="0.99",
+    version="0.999",
     author="Laurent Maumet",
     author_email="laurent@aurora-5r.fr",
     packages=setuptools.find_packages(),
