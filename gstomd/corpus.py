@@ -6,10 +6,9 @@ import unicodedata
 import zipfile
 from datetime import datetime
 
+from bs4 import BeautifulSoup
 from funcy import retry
 from funcy.py3 import cat
-from bs4 import BeautifulSoup
-
 from markdownify import markdownify as md
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
@@ -228,9 +227,9 @@ class Gfolder(Node):
         # parents_id = "%s or '%s' in parents" % (parents_id, folders)
 
         query_for_files = (
-            "trashed=false and mimeType='application/vnd.google-apps.document' and (" +
-            parents_id +
-            ")"
+            "trashed=false and mimeType='application/vnd.google-apps.document' and ("
+            + parents_id
+            + ")"
         )
         logger.debug("Query for files : %s", query_for_files)
         for item in pydrive_list_item(self.drive_connector, query_for_files):
