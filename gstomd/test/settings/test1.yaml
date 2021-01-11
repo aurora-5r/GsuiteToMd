@@ -1,2 +1,2 @@
 dest_folder: "documents_archive"
-pydrive_settings: "pydrive_settings.yaml"
+pydrive_settings: "settings/pydrive_settings.yaml"
