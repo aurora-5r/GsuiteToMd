@@ -1,42 +1,43 @@
 disable_existing_loggers: false
 formatters:
-  complete:
-    format: '%(asctime)s -  %(levelname)s - %(filename)s:%(lineno)s - %(funcName)20s()
-      ] %(message)s'
-  simple:
-    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    complete:
+        format:
+            "%(asctime)s -  %(levelname)s - %(filename)s:%(lineno)s - %(funcName)20s()
+            ] %(message)s"
+    simple:
+        format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 handlers:
-  console:
-    class: logging.StreamHandler
-    formatter: complete
-    level: DEBUG
-    stream: ext://sys.stdout
-  info_file_handler:
-    backupCount: 20
-    class: logging.handlers.RotatingFileHandler
-    encoding: utf8
-    filename: ../log/infos.log
-    formatter: complete
-    level: INFO
-    maxBytes: 10485760
-  log_file_handler:
-    backupCount: 20
-    class: logging.handlers.RotatingFileHandler
-    encoding: utf8
-    filename: ../log/all.log
-    formatter: complete
-    level: DEBUG
-    maxBytes: 10485760
+    console:
+        class: logging.StreamHandler
+        formatter: complete
+        level: INFO
+        stream: ext://sys.stdout
+    info_file_handler:
+        backupCount: 20
+        class: logging.handlers.RotatingFileHandler
+        encoding: utf8
+        filename: infos.log
+        formatter: complete
+        level: INFO
+        maxBytes: 10485760
+    log_file_handler:
+        backupCount: 20
+        class: logging.handlers.RotatingFileHandler
+        encoding: utf8
+        filename: debug.log
+        formatter: complete
+        level: DEBUG
+        maxBytes: 10485760
 loggers:
-  __mainaa__:
-    handlers:
-    - console
-    level: DEBUG
-    propagate: false
+    __mainaa__:
+        handlers:
+            - console
+        level: DEBUG
+        propagate: false
 root:
-  handlers:
-  - console
-  - log_file_handler
-  - info_file_handler
-  level: DEBUG
+    handlers:
+        - console
+        - log_file_handler
+        - info_file_handler
+    level: INFO
 version: 1
