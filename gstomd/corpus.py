@@ -21,10 +21,8 @@ FILETYPE = {
 }
 
 
-this_dir, this_filename = os.path.split(__file__)
-pydrive_settings_default = os.path.join(this_dir, "pydrive_settings.yaml")
 DEFAULT_SETTINGS = {
-    "pydrive_settings": pydrive_settings_default,
+    "pydrive_settings": "pydrive_settings.yaml",
     "dest_folder": "gstomd_extract",
 }
 
@@ -298,7 +296,6 @@ class GsuiteToMd:
 
         self.dest_folder = dest_folder
         self.pydrive_settings = pydrive_settings
-
         logger.info(
             "Settings : dest_folder %s, pydrive_settings %s",
             self.dest_folder,

@@ -7,7 +7,7 @@ GsuiteToMd.egg-info/dependency_links.txt
 GsuiteToMd.egg-info/requires.txt
 GsuiteToMd.egg-info/top_level.txt
 gstomd/__init__.py
+gstomd/__main__.py
 gstomd/corpus.py
-gstomd/settings.py
 gstomd/test/__init__.py
 gstomd/test/test_corpus.py

@@ -1,7 +1,7 @@
-from setuptools import setup
-import setuptools
 import sys
 
+import setuptools
+from setuptools import setup
 
 # Extra dependecies to run tests
 tests_requirements = [
@@ -17,7 +17,7 @@ if sys.version_info >= (3, 6):
 
 setup(
     name="GsuiteToMd",
-    version="0.999",
+    version="1.00",
     author="Laurent Maumet",
     author_email="laurent@aurora-5r.fr",
     packages=setuptools.find_packages(),
@@ -31,6 +31,7 @@ setup(
         "pydrive2",
         "markdownify",
         "funcy",
+        "argparse",
     ],
     extras_require={"tests": tests_requirements},
 )

@@ -8,10 +8,25 @@ from gstomd.corpus import GsuiteToMd
 def main():
 
     logger = logging.getLogger("gstomd")
-    logger.debug("Start")
+
+    logger.info("Start")
     folder_id = ""
     my_parser = argparse.ArgumentParser()
-
+    my_parser.add_argument(
+        "--verbose", help="increase output verbosity", action="store_true"
+    )
+    my_parser.add_argument(
+        "--debug",
+        help="increase output verbosity to debug",
+        action="store_true",
+    )
+    my_parser.add_argument(
+        "--config",
+        action="store",
+        type=str,
+        help="Configuration file for PyDrive2",
+        default="",
+    )
     my_parser.add_argument(
         "--folder_id",
         action="store",
@@ -38,8 +53,14 @@ def main():
     folder_id = args.folder_id
     folder_name = args.folder_name
     args = my_parser.parse_args()
+    if args.verbose:
+        logging.basicConfig(level=logging.INFO)
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
 
-    gstomd = GsuiteToMd(dest_folder=dest_folder_name)
+    gstomd = GsuiteToMd(
+        dest_folder=dest_folder_name, pydrive_settings=args.config
+    )
     logger.debug("gsuiteTomd  Created")
 
     gstomd.Folder(

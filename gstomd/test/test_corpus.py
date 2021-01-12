@@ -3,9 +3,8 @@ import unittest
 import logging
 
 # from gstomd.corpus import GsuiteToMd
-from gstomd.settings import SetupLogging
+# from gstomd.settings import SetupLogging
 
-SetupLogging()
 logger = logging.getLogger(__name__)
 
 
