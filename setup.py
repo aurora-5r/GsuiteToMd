@@ -17,7 +17,7 @@ if sys.version_info >= (3, 6):
 
 setup(
     name="GsuiteToMd",
-    version="1.00",
+    version="1.01",
     author="Laurent Maumet",
     author_email="laurent@aurora-5r.fr",
     packages=setuptools.find_packages(),
@@ -28,9 +28,8 @@ setup(
         "google-api-python-client >= 1.12.5",
         "PyYAML >= 3.0",
         "bs4",
-        "pydrive2",
+        "pydrive",
         "markdownify",
-        "funcy",
         "argparse",
     ],
     extras_require={"tests": tests_requirements},

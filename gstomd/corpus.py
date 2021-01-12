@@ -7,12 +7,9 @@ import zipfile
 from datetime import datetime
 
 from bs4 import BeautifulSoup
-from funcy import retry
-from funcy.py3 import cat
 from markdownify import markdownify as md
-from pydrive2.auth import GoogleAuth
-from pydrive2.drive import GoogleDrive
-from pydrive2.files import ApiRequestError
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
 
 logger = logging.getLogger(__name__)
 FILETYPE = {
@@ -39,7 +36,7 @@ def mime_to_filetype(mime_string):
     for label, carac in FILETYPE.items():
         if carac[0] == mime_string:
             return label
-    logger.warning("Unknown mime type : %s", mime_string)
+    logger.debug("Unknown mime type : %s", mime_string)
     return "UNKNOWN"
 
 
@@ -105,10 +102,10 @@ class Node:
 
 class Gdoc(Node):
     def __str__(self):
-        return "\n%sD : %50s|%20s|%20s|%s" % (
+        return "\n%sD : %20s|%30s|%20s|%s" % (
             "-" * self.depth * 4,
-            self.id(),
             self.basename(),
+            self.id(),
             self.unix_name(),
             self.path,
         )
@@ -171,10 +168,10 @@ class Gfolder(Node):
         logger.debug(self)
 
     def __str__(self):
-        message = "\n%sF : %50s|%20s|%20s|%s" % (
+        message = "\n%sF : %20s|%30s|%20s|%s" % (
             "-" * self.depth * 4,
-            self.id(),
             self.basename(),
+            self.id(),
             self.unix_name(),
             self.path,
         )
@@ -199,8 +196,20 @@ class Gfolder(Node):
         query = (
             "trashed=false and mimeType='application/vnd.google-apps.folder'"
         )
+        # file_list = pydrive_list_item(self.drive_connector, query)
+        file_list = self.drive_connector.ListFile({"q": query}).GetList()
 
-        for item in pydrive_list_item(self.drive_connector, query):
+        file_list = self.drive_connector.ListFile(
+            {
+                "q": query,
+                "corpora": "allDrives",
+                "includeItemsFromAllDrives": True,
+                "supportsAllDrives": True,
+            },
+        ).GetList()
+        logger.debug("%d folders found", sum(1 for x in file_list))
+
+        for item in file_list:
             if item["id"] == self.root_folder_id:
                 self._googleDriveFile = item
                 folder = self
@@ -231,8 +240,23 @@ class Gfolder(Node):
             + parents_id
             + ")"
         )
+
         logger.debug("Query for files : %s", query_for_files)
-        for item in pydrive_list_item(self.drive_connector, query_for_files):
+        file_list = self.drive_connector.ListFile(
+            {
+                "q": query_for_files,
+                "corpora": "allDrives",
+                "includeItemsFromAllDrives": True,
+                "supportsAllDrives": True,
+            },
+        ).GetList()
+        # file_list = pydrive_list_item(self.drive_connector, query_for_files)
+        logger.debug("%d files found", sum(1 for x in file_list))
+
+        for item in file_list:
+            if mime_to_filetype(item["mimeType"]) != "DOC":
+                logger.debug("%s %s", item["title"], item["mimeType"])
+                continue
             doc = Gdoc(item)
             logger.debug("Doc found %s", doc)
 
@@ -326,28 +350,3 @@ class GsuiteToMd:
 
 class PyDriveRetriableError(Exception):
     pass
-
-
-# 15 tries, start at 0.5s, multiply by golden ratio, cap at 20s
-@retry(15, PyDriveRetriableError, timeout=lambda a: min(0.5 * 1.618 ** a, 20))
-def pydrive_retry(call, *args, **kwargs):
-    try:
-        result = call(*args, **kwargs)
-    except ApiRequestError as exception:
-        if exception.error["code"] in [403, 500, 502, 503, 504]:
-            raise PyDriveRetriableError("Google API request failed")
-        raise
-    return result
-
-
-def pydrive_list_item(drive, query, max_results=1000):
-    param = {"q": query, "maxResults": max_results}
-
-    file_list = drive.ListFile(param)
-
-    # Isolate and decorate fetching of remote drive items in pages
-    def get_list():
-        return pydrive_retry(next, file_list, None)  # noqa: E731
-
-    # Fetch pages until None is received, lazily flatten the thing
-    return cat(iter(get_list, None))
