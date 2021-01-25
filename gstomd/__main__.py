@@ -2,7 +2,7 @@
 import argparse
 import logging
 
-from gstomd.corpus import GsuiteToMd
+from gstomd.convert import GsuiteToMd
 
 
 def main():
@@ -24,7 +24,7 @@ def main():
         "--config",
         action="store",
         type=str,
-        help="Configuration file for PyDrive2",
+        help="Configuration file for PyDrive",
         default="",
     )
     my_parser.add_argument(
