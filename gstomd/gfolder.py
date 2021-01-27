@@ -69,14 +69,6 @@ class Gfolder(Node):
         Generate folder structure with files
         """
 
-        now = datetime.now()
-        date_time = now.strftime("%Y.%m.%d.%H.%M.%S")
-        self.path = "%s/%s/%s" % (
-            self.dest_folder,
-            self.root_folder_name,
-            date_time,
-        )
-        logger.debug(".")
         nodes = {}
         query = (
             "trashed=false and mimeType='application/vnd.google-apps.folder'"
@@ -95,9 +87,18 @@ class Gfolder(Node):
 
         for item in file_list:
             if item["id"] == self.root_folder_id:
+
                 self._googleDriveFile = item
                 folder = self
-                self.root_folder_id = folder.basename()
+
+                self.root_folder_name = self.unix_name()
+
+                self.path = "%s/%s" % (
+                    self.dest_folder,
+                    self.unix_name(),
+
+                )
+
             else:
                 folder = Gfolder(item)
             nodes[folder.id()] = (folder, folder.parent())

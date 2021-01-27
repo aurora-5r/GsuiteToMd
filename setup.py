@@ -23,7 +23,7 @@ setup(
     packages=setuptools.find_packages(),
     url="https://github.com/laurentmau/GsuiteToMd",
     description="Tools to convert gsuite Documents to markdown.",
-    long_description=open("README.md").read(),
+    long_description=open("README.rst").read(),
     install_requires=[
         "google-api-python-client >= 1.12.5",
         "PyYAML >= 3.0",

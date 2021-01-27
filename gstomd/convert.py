@@ -38,7 +38,7 @@ class GsuiteToMd:
         self.ga = GoogleAuth(self.pydrive_settings)
         self.drive_connector = GoogleDrive(self.ga)
 
-    def Folder(self, folder_id, root_folder_name=""):
+    def Folder(self, folder_id,):
         f = Gfolder(
             googleDriveFile="",
             path="",
@@ -46,7 +46,6 @@ class GsuiteToMd:
             drive_connector=self.drive_connector,
             root_folder_id=folder_id,
             dest_folder=self.dest_folder,
-            root_folder_name=root_folder_name,
         )
 
         f.fetch()

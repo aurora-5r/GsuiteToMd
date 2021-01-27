@@ -6,11 +6,26 @@
 Welcome to GsuiteToMd's documentation!
 ======================================
 
+
+
+GsuiteToMd is a  library built on top of `PyDrive`_ that offers a simple way to convert Documents store in Google Drive in markdown.
+
+How to install
+==============
+
+You can install GsuiteToMd with regular ``pip`` command.
+
+::
+
+   $ pip install GsuiteToMd
+
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
+   README
+   gstomd
 
+.. _`PyDrive`: https://github.com/gsuitedevs/PyDrive
 
 Indices and tables
 ==================
