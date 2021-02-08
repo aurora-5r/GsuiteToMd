@@ -57,7 +57,7 @@ googleapis-common-protos==1.52.0
 greenlet==0.4.17
 grpcio==1.33.2
 -e git+https://github.com/laurentmau/GsuiteToMd@c3b72843c15786b67cb9441dddca2ea468351713#egg=GsuiteToMd
-httplib2==0.18.1
+httplib2==0.19.0
 hyperlink==20.0.1
 identify==1.5.11
 idna==2.8
