@@ -10,43 +10,53 @@ writing top-level names to GsuiteToMd.egg-info/top_level.txt
 reading manifest file 'GsuiteToMd.egg-info/SOURCES.txt'
 writing manifest file 'GsuiteToMd.egg-info/SOURCES.txt'
 running check
-creating GsuiteToMd-0.91
-creating GsuiteToMd-0.91/GsuiteToMd.egg-info
-creating GsuiteToMd-0.91/gstomd
-creating GsuiteToMd-0.91/gstomd/test
-copying files to GsuiteToMd-0.91...
-copying README.md -> GsuiteToMd-0.91
-copying pyproject.toml -> GsuiteToMd-0.91
-copying setup.py -> GsuiteToMd-0.91
-copying GsuiteToMd.egg-info/PKG-INFO -> GsuiteToMd-0.91/GsuiteToMd.egg-info
-copying GsuiteToMd.egg-info/SOURCES.txt -> GsuiteToMd-0.91/GsuiteToMd.egg-info
-copying GsuiteToMd.egg-info/dependency_links.txt -> GsuiteToMd-0.91/GsuiteToMd.egg-info
-copying GsuiteToMd.egg-info/requires.txt -> GsuiteToMd-0.91/GsuiteToMd.egg-info
-copying GsuiteToMd.egg-info/top_level.txt -> GsuiteToMd-0.91/GsuiteToMd.egg-info
-copying gstomd/__init__.py -> GsuiteToMd-0.91/gstomd
-copying gstomd/corpus.py -> GsuiteToMd-0.91/gstomd
-copying gstomd/settings.py -> GsuiteToMd-0.91/gstomd
-copying gstomd/test/__init__.py -> GsuiteToMd-0.91/gstomd/test
-copying gstomd/test/test_corpus.py -> GsuiteToMd-0.91/gstomd/test
-Writing GsuiteToMd-0.91/setup.cfg
-creating '.tox/dist/GsuiteToMd-0.91.zip' and adding 'GsuiteToMd-0.91' to it
-adding 'GsuiteToMd-0.91'
-adding 'GsuiteToMd-0.91/GsuiteToMd.egg-info'
-adding 'GsuiteToMd-0.91/gstomd'
-adding 'GsuiteToMd-0.91/README.md'
-adding 'GsuiteToMd-0.91/pyproject.toml'
-adding 'GsuiteToMd-0.91/setup.py'
-adding 'GsuiteToMd-0.91/PKG-INFO'
-adding 'GsuiteToMd-0.91/setup.cfg'
-adding 'GsuiteToMd-0.91/GsuiteToMd.egg-info/PKG-INFO'
-adding 'GsuiteToMd-0.91/GsuiteToMd.egg-info/SOURCES.txt'
-adding 'GsuiteToMd-0.91/GsuiteToMd.egg-info/dependency_links.txt'
-adding 'GsuiteToMd-0.91/GsuiteToMd.egg-info/requires.txt'
-adding 'GsuiteToMd-0.91/GsuiteToMd.egg-info/top_level.txt'
-adding 'GsuiteToMd-0.91/gstomd/test'
-adding 'GsuiteToMd-0.91/gstomd/__init__.py'
-adding 'GsuiteToMd-0.91/gstomd/corpus.py'
-adding 'GsuiteToMd-0.91/gstomd/settings.py'
-adding 'GsuiteToMd-0.91/gstomd/test/__init__.py'
-adding 'GsuiteToMd-0.91/gstomd/test/test_corpus.py'
-removing 'GsuiteToMd-0.91' (and everything under it)
+creating GsuiteToMd-1.2
+creating GsuiteToMd-1.2/GsuiteToMd.egg-info
+creating GsuiteToMd-1.2/gstomd
+creating GsuiteToMd-1.2/gstomd/test
+copying files to GsuiteToMd-1.2...
+copying README.rst -> GsuiteToMd-1.2
+copying pyproject.toml -> GsuiteToMd-1.2
+copying setup.py -> GsuiteToMd-1.2
+copying GsuiteToMd.egg-info/PKG-INFO -> GsuiteToMd-1.2/GsuiteToMd.egg-info
+copying GsuiteToMd.egg-info/SOURCES.txt -> GsuiteToMd-1.2/GsuiteToMd.egg-info
+copying GsuiteToMd.egg-info/dependency_links.txt -> GsuiteToMd-1.2/GsuiteToMd.egg-info
+copying GsuiteToMd.egg-info/requires.txt -> GsuiteToMd-1.2/GsuiteToMd.egg-info
+copying GsuiteToMd.egg-info/top_level.txt -> GsuiteToMd-1.2/GsuiteToMd.egg-info
+copying gstomd/__init__.py -> GsuiteToMd-1.2/gstomd
+copying gstomd/__main__.py -> GsuiteToMd-1.2/gstomd
+copying gstomd/convert.py -> GsuiteToMd-1.2/gstomd
+copying gstomd/gdoc.py -> GsuiteToMd-1.2/gstomd
+copying gstomd/gfolder.py -> GsuiteToMd-1.2/gstomd
+copying gstomd/node.py -> GsuiteToMd-1.2/gstomd
+copying gstomd/utils.py -> GsuiteToMd-1.2/gstomd
+copying gstomd/test/__init__.py -> GsuiteToMd-1.2/gstomd/test
+copying gstomd/test/test_Folder.py -> GsuiteToMd-1.2/gstomd/test
+Writing GsuiteToMd-1.2/setup.cfg
+creating '.tox/dist/GsuiteToMd-1.2.zip' and adding 'GsuiteToMd-1.2' to it
+adding 'GsuiteToMd-1.2'
+adding 'GsuiteToMd-1.2/GsuiteToMd.egg-info'
+adding 'GsuiteToMd-1.2/gstomd'
+adding 'GsuiteToMd-1.2/README.rst'
+adding 'GsuiteToMd-1.2/pyproject.toml'
+adding 'GsuiteToMd-1.2/setup.py'
+adding 'GsuiteToMd-1.2/PKG-INFO'
+adding 'GsuiteToMd-1.2/setup.cfg'
+adding 'GsuiteToMd-1.2/GsuiteToMd.egg-info/PKG-INFO'
+adding 'GsuiteToMd-1.2/GsuiteToMd.egg-info/SOURCES.txt'
+adding 'GsuiteToMd-1.2/GsuiteToMd.egg-info/dependency_links.txt'
+adding 'GsuiteToMd-1.2/GsuiteToMd.egg-info/requires.txt'
+adding 'GsuiteToMd-1.2/GsuiteToMd.egg-info/top_level.txt'
+adding 'GsuiteToMd-1.2/gstomd/test'
+adding 'GsuiteToMd-1.2/gstomd/__init__.py'
+adding 'GsuiteToMd-1.2/gstomd/__main__.py'
+adding 'GsuiteToMd-1.2/gstomd/convert.py'
+adding 'GsuiteToMd-1.2/gstomd/gdoc.py'
+adding 'GsuiteToMd-1.2/gstomd/gfolder.py'
+adding 'GsuiteToMd-1.2/gstomd/node.py'
+adding 'GsuiteToMd-1.2/gstomd/utils.py'
+adding 'GsuiteToMd-1.2/gstomd/test/__init__.py'
+adding 'GsuiteToMd-1.2/gstomd/test/test_Folder.py'
+removing 'GsuiteToMd-1.2' (and everything under it)
+/home/ec2-user/dev/python_env/lib/python3.7/site-packages/setuptools/dist.py:452: UserWarning: Normalizing '1.02' to '1.2'
+  warnings.warn(tmpl.format(**locals()))

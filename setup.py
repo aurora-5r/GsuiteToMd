@@ -2,6 +2,12 @@ import sys
 
 import setuptools
 from setuptools import setup
+from version import get_git_version
+# From http://bugs.python.org/issue15881
+try:
+    import multiprocessing
+except ImportError:
+    pass
 
 # Extra dependecies to run tests
 tests_requirements = [
@@ -17,7 +23,7 @@ if sys.version_info >= (3, 6):
 
 setup(
     name="GsuiteToMd",
-    version="1.01",
+    version=get_git_version(),
     author="Laurent Maumet",
     author_email="laurent@aurora-5r.fr",
     packages=setuptools.find_packages(),
@@ -31,6 +37,7 @@ setup(
         "pydrive",
         "markdownify",
         "argparse",
+        "lxml"
     ],
     extras_require={"tests": tests_requirements},
 )

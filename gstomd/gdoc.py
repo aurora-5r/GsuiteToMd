@@ -2,7 +2,9 @@
 
 import logging
 import os
+import shutil
 import zipfile
+from pathlib import Path
 
 from bs4 import BeautifulSoup
 from markdownify import markdownify as md
@@ -43,6 +45,9 @@ class Gdoc(Node):
         """
         if not self.is_fetched:
             self.fetch()
+        dirpath = Path(self.path)
+        if dirpath.exists() and dirpath.is_dir():
+            shutil.rmtree(dirpath)
         os.makedirs(self.path)
         zip_path = self.path + "/" + os.path.basename(self.path) + ".zip"
         md_path = self.path + "/" + os.path.basename(self.path) + ".md"
@@ -60,8 +65,19 @@ class Gdoc(Node):
                     body = "%s" % (parsed_html.body)
 
                     body_md = md(body)
+                    meta_id = "gsuiteid: " + self.id()
                     f_md.write(body_md)
                     f_md.close()
+                    f_md = open(md_path, "r")
+                    contents = f_md.readlines()
+                    f_md.close()
+                    contents.insert(1, meta_id)
+
+                    f_md = open(md_path, "w")
+                    contents = "".join(contents)
+                    f_md.write(contents)
+                    f_md.close()
+
                 else:
                     zip_ref.extract(file_name, os.path.dirname(md_path))
             os.remove(zip_path)

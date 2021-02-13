@@ -2,8 +2,8 @@
 
 import logging
 import os
-from datetime import datetime
-
+import shutil
+from pathlib import Path
 
 from gstomd.gdoc import Gdoc
 from gstomd.node import Node
@@ -158,6 +158,9 @@ class Gfolder(Node):
     def to_disk(self):
         """Create folder and all his subfolders and google documents on the disk
         """
+        dirpath = Path(self.path)
+        if dirpath.exists() and dirpath.is_dir():
+            shutil.rmtree(dirpath)
         os.makedirs(self.path)
         if self.children:
             for child in self.children:

@@ -1,7 +1,9 @@
 __pycache__/
 .ipynb_checkpoints/
 .vscode/
-**/*secret*
+gstomd/test/configs/*
+gstomd/test/credentials/*
+client_secrets.json
 
 *.pyc
 *~
@@ -11,6 +13,3 @@ dist
 build
 .cache
 
-.env
-.idea
-pip-wheel-metadata
