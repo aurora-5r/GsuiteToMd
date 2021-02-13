@@ -60,7 +60,7 @@ jobs:
                 skip_cleanup: true
                 on:
                     tags: true
-                    repo: laurentmau/GsuiteToMd
+                    repo: aurora-5r/GsuiteToMd
 before_install:
     - bash ./scripts/ci/before_install.sh
     - source env.sh

@@ -3,11 +3,6 @@ import sys
 import setuptools
 from setuptools import setup
 from version import get_git_version
-# From http://bugs.python.org/issue15881
-try:
-    import multiprocessing
-except ImportError:
-    pass
 
 # Extra dependecies to run tests
 tests_requirements = [
@@ -27,7 +22,7 @@ setup(
     author="Laurent Maumet",
     author_email="laurent@aurora-5r.fr",
     packages=setuptools.find_packages(),
-    url="https://github.com/laurentmau/GsuiteToMd",
+    url="https://github.com/aurora-5r/GsuiteToMd",
     description="Tools to convert gsuite Documents to markdown.",
     long_description=open("README.rst").read(),
     install_requires=[

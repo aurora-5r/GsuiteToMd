@@ -1,8 +1,8 @@
 Metadata-Version: 2.1
 Name: GsuiteToMd
-Version: 1.2
+Version: b-v0.9-21-geceb364-dirty
 Summary: Tools to convert gsuite Documents to markdown.
-Home-page: https://github.com/laurentmau/GsuiteToMd
+Home-page: https://github.com/aurora-5r/GsuiteToMd
 Author: Laurent Maumet
 Author-email: laurent@aurora-5r.fr
 License: UNKNOWN
