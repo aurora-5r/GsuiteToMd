@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: GsuiteToMd
-Version: b-v0.9-21-geceb364-dirty
+Version: b-v1.3.0-1-g2cf7312-dirty
 Summary: Tools to convert gsuite Documents to markdown.
 Home-page: https://github.com/aurora-5r/GsuiteToMd
 Author: Laurent Maumet
@@ -62,6 +62,7 @@ Description: GsuiteToMd is a  library built on top of `PyDrive`_ that offers a s
                         ├── gdoc3.md 
                         ├── images
                             ├── image1.png
+        
         
         
         
