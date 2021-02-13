@@ -51,7 +51,8 @@ def call_git_describe(abbrev):
 
 def is_dirty():
     try:
-        p = Popen(["git", "diff-index", "--name-only", "HEAD"],
+        p = Popen(["git", "diff-index",
+                   "HEAD"],
                   stdout=PIPE, stderr=PIPE)
         p.stderr.close()
         lines = p.stdout.readlines()
