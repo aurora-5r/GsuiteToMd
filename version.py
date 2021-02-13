@@ -43,7 +43,7 @@ def call_git_describe(abbrev):
                   stdout=PIPE, stderr=PIPE)
         p.stderr.close()
         line = p.stdout.readlines()[0]
-        return str(line.strip())
+        return line.strip().decode("utf-8")
 
     except:
         return None
@@ -82,7 +82,7 @@ def write_release_version(version):
     f.close()
 
 
-def get_git_version(abbrev=7):
+def get_git_version(abbrev=0):
     # Read in the version that's currently in RELEASE-VERSION.
 
     release_version = read_release_version()
@@ -112,8 +112,8 @@ def get_git_version(abbrev=7):
 
     # Finally, return the current version.
 
-    return version
+    return str(version)
 
 
 if __name__ == "__main__":
-    print(get_git_version())
+    print(get_git_version(abbrev=0))
