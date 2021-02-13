@@ -19,7 +19,6 @@ class Gfolder(Node):
     """
 
     def __init__(
-
         self,
         googleDriveFile="",
         path="",
@@ -34,7 +33,7 @@ class Gfolder(Node):
             googleDriveFile (GoogleDriveFile, optional): see Node.
             path (str, optional): see Node.
             depth (int, optional): see Node.
-            drive_connector (str, optional): An instance of GoogleDrive created during connection by convert.GsuiteToMd.
+            drive_connector (str, optional): instance of GoogleDrive.
             dest_folder (str, optional): The destination folder on disk.
             root_folder_id (str, optional): id of the root folder in Gdrive.
         """
@@ -93,11 +92,7 @@ class Gfolder(Node):
 
                 self.root_folder_name = self.unix_name()
 
-                self.path = "%s/%s" % (
-                    self.dest_folder,
-                    self.unix_name(),
-
-                )
+                self.path = "%s/%s" % (self.dest_folder, self.unix_name(),)
 
             else:
                 folder = Gfolder(item)
@@ -119,9 +114,9 @@ class Gfolder(Node):
         )
 
         query_for_files = (
-            "trashed=false and mimeType='application/vnd.google-apps.document' and (" +
-            parents_id +
-            ")"
+            "trashed=false and mimeType='application/vnd.google-apps.document' and ("
+            + parents_id
+            + ")"
         )
 
         logger.debug("Query for files : %s", query_for_files)
