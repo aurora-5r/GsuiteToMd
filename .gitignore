@@ -7,7 +7,7 @@ client_secrets.json
 
 *.pyc
 *~
-*.egg-info/
+*.egg-info/*
 dist
 build
 .cache
